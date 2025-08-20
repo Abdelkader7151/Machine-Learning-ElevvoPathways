@@ -12,40 +12,97 @@ A complete machine learning project that predicts student exam scores using vari
 - **Approach**: Linear regression with comprehensive feature analysis and visualization
 - **Tools**: Python, pandas, scikit-learn, matplotlib, seaborn
 
-### 📁 Repository Structure
-```
-Machine-Learning-ElevvoPathways/
-├── README.md                            # This file
-├── .gitignore                           # Git ignore rules
-└── Task-1-student-performance-indicator/
-    ├── data/
-    │   └── StudentPerformanceFactors.csv    # Dataset
-    ├── assets/
-    │   ├── analysis_overview.png            # EDA visualizations
-    │   ├── model_predictions.png            # Model performance plots
-    │   ├── plot1.png                        # Additional plots
-    │   └── plot2.png                        # Additional plots
-    ├── main.py                              # Complete Python script
-    └── Task-1-student-performance-indicator.ipynb  # Jupyter notebook
+### 💻 Code Implementation
+
+#### Data Loading and Preprocessing
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+
+# Load dataset
+df = pd.read_csv('data/StudentPerformanceFactors.csv')
+
+# Data cleaning and preprocessing
+for col in df.columns:
+    if df[col].dtype == 'object':
+        converted = pd.to_numeric(df[col], errors='ignore')
+        if not converted.equals(df[col]):
+            df[col] = converted
+
+# Handle missing values
+for col in df.columns:
+    if pd.api.types.is_numeric_dtype(df[col]):
+        df[col] = df[col].fillna(df[col].median())
+    else:
+        if df[col].isnull().any():
+            mode_val = df[col].mode(dropna=True)
+            if not mode_val.empty:
+                df[col] = df[col].fillna(mode_val.iloc[0])
 ```
 
-### 🚀 How to Run
+#### Exploratory Data Analysis
+```python
+# Target variable analysis
+target = 'Exam_Score'
+print(f"Score range: {df[target].min():.2f} - {df[target].max():.2f}")
+print(f"Score average: {df[target].mean():.2f}")
 
-#### Prerequisites
-```bash
-pip install pandas numpy matplotlib seaborn scikit-learn jupyter
+# Correlation analysis
+numeric_df = df.select_dtypes(include=[np.number])
+correlation_matrix = numeric_df.corr()
+
+# Visualization
+plt.figure(figsize=(12, 4))
+plt.subplot(1, 3, 1)
+plt.hist(df[target], bins=20, alpha=0.7)
+plt.title(f'Distribution of {target}')
+
+plt.subplot(1, 3, 2)
+plt.scatter(df['Hours_Studied'], df[target], alpha=0.6)
+plt.title('Study Hours vs Exam Score')
+
+plt.subplot(1, 3, 3)
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', center=0)
+plt.title('Correlation Matrix')
+plt.tight_layout()
+plt.show()
 ```
 
-#### Option 1: Python Script
-```bash
-cd Task-1-student-performance-indicator
-python main.py
-```
+#### Model Training and Evaluation
+```python
+# Prepare features and target
+X = df.select_dtypes(include=[np.number]).drop(columns=[target])
+y = df[target]
 
-#### Option 2: Jupyter Notebook
-```bash
-cd Task-1-student-performance-indicator
-jupyter notebook Task-1-student-performance-indicator.ipynb
+# Handle categorical variables
+categorical_cols = df.select_dtypes(include=['object']).columns
+if len(categorical_cols) > 0:
+    df_encoded = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
+    X = df_encoded.select_dtypes(include=[np.number]).drop(columns=[target])
+
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train the model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Make predictions
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+r2 = r2_score(y_test, y_pred)
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+mae = mean_absolute_error(y_test, y_pred)
+
+print(f"R² Score: {r2:.4f}")
+print(f"RMSE: {rmse:.4f}")
+print(f"MAE: {mae:.4f}")
 ```
 
 ### 📈 Results & Visualizations
