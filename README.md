@@ -168,4 +168,13 @@ The analysis reveals important factors that influence student performance:
 
 ---
 
+## 👨‍💻 Author
+
+**Abdelkader**
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Abdelkader7151)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/abdelrhman-abdelkader-6313a4291/)
+
+---
+
 *This project is part of the ElevvoPathways Machine Learning curriculum.*
