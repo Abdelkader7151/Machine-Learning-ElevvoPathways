@@ -1,31 +1,40 @@
 # Machine Learning - ElevvoPathways
 
-A collection of machine learning projects and tasks for skill development.
+A collection of machine learning projects and tasks for skill development and learning.
 
 ## 📊 Task 1: Student Performance Indicator
 
-Predicting student exam scores using various performance factors.
+A complete machine learning project that predicts student exam scores using various performance factors.
 
 ### 🎯 Project Overview
 - **Dataset**: Student performance factors including study hours, attendance, parental involvement, etc.
 - **Goal**: Build a regression model to predict exam scores
-- **Approach**: Linear regression with feature analysis and visualization
+- **Approach**: Linear regression with comprehensive feature analysis and visualization
+- **Tools**: Python, pandas, scikit-learn, matplotlib, seaborn
 
-### 📁 Project Structure
+### 📁 Repository Structure
 ```
-Task-1-student-performance-indicator/
-├── data/
-│   └── StudentPerformanceFactors.csv    # Dataset
-├── assets/
-│   ├── analysis_overview.png            # EDA visualizations
-│   ├── model_predictions.png            # Model performance plots
-│   ├── plot1.png                        # Additional plots
-│   └── plot2.png                        # Additional plots
-├── main.py                              # Complete Python script
-└── Task-1-student-performance-indicator.ipynb  # Jupyter notebook
+Machine-Learning-ElevvoPathways/
+├── README.md                            # This file
+├── .gitignore                           # Git ignore rules
+└── Task-1-student-performance-indicator/
+    ├── data/
+    │   └── StudentPerformanceFactors.csv    # Dataset
+    ├── assets/
+    │   ├── analysis_overview.png            # EDA visualizations
+    │   ├── model_predictions.png            # Model performance plots
+    │   ├── plot1.png                        # Additional plots
+    │   └── plot2.png                        # Additional plots
+    ├── main.py                              # Complete Python script
+    └── Task-1-student-performance-indicator.ipynb  # Jupyter notebook
 ```
 
 ### 🚀 How to Run
+
+#### Prerequisites
+```bash
+pip install pandas numpy matplotlib seaborn scikit-learn jupyter
+```
 
 #### Option 1: Python Script
 ```bash
@@ -34,19 +43,22 @@ python main.py
 ```
 
 #### Option 2: Jupyter Notebook
-Open `Task-1-student-performance-indicator.ipynb` in Jupyter Lab/Notebook and run all cells.
+```bash
+cd Task-1-student-performance-indicator
+jupyter notebook Task-1-student-performance-indicator.ipynb
+```
 
 ### 📈 Results & Visualizations
 
 #### Data Analysis Overview
-![Analysis Overview](Task-1-student-performance-indicator/assets/analysis_overview.png)
+![Analysis Overview](Task-1-student-performance-indicator/assets/plot1.png)
 
-*Shows score distribution, study hours vs scores relationship, and correlation matrix*
+*Distribution analysis, correlation matrix, and key relationships*
 
 #### Model Performance
-![Model Predictions](Task-1-student-performance-indicator/assets/model_predictions.png)
+![Model Performance](Task-1-student-performance-indicator/assets/plot2.png)
 
-*Actual vs Predicted scores and residuals distribution*
+*Model predictions vs actual values and performance metrics*
 
 ### 🔍 Key Features Analyzed
 - Study hours per week
