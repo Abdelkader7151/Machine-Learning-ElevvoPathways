@@ -6,24 +6,18 @@ A collection of machine learning projects and tasks for skill development and le
 
 A complete machine learning project that predicts student exam scores using various performance factors.
 
-## 🎯 Task 2: Customer Segmentation
-
-A comprehensive clustering analysis project that segments mall customers based on income and spending patterns using K-Means and DBSCAN algorithms.
-
-### 🎯 Task 1 Overview
+### 🎯 Overview
 - **Dataset**: Student performance factors including study hours, attendance, parental involvement, etc.
 - **Goal**: Build a regression model to predict exam scores
 - **Approach**: Linear regression with comprehensive feature analysis and visualization
 - **Tools**: Python, pandas, scikit-learn, matplotlib, seaborn
 
-### 🎯 Task 2 Overview
-- **Dataset**: Mall Customers with Annual Income and Spending Score data
-- **Goal**: Segment customers into distinct groups for targeted marketing
-- **Approach**: K-Means clustering with optimal cluster selection using Elbow Method and Silhouette Analysis
-- **Tools**: Python, pandas, scikit-learn, matplotlib, seaborn
-- **Bonus**: DBSCAN clustering comparison and business insights
+### 📋 Requirements
+```bash
+pip install pandas numpy matplotlib seaborn scikit-learn jupyter
+```
 
-### 💻 Task 1 Code Implementation
+### 💻 Code Implementation
 
 #### Data Loading and Preprocessing
 ```python
@@ -89,7 +83,6 @@ plt.show()
 # Prepare features and target
 X = df.select_dtypes(include=[np.number]).drop(columns=[target])
 y = df[target]
-<<<<<<< HEAD
 
 # Handle categorical variables
 categorical_cols = df.select_dtypes(include=['object']).columns
@@ -117,7 +110,73 @@ print(f"RMSE: {rmse:.4f}")
 print(f"MAE: {mae:.4f}")
 ```
 
-### 💻 Task 2 Code Implementation
+### 📈 Results & Visualizations
+
+![Analysis Overview](Task-1-student-performance-indicator/assets/plot1.png)
+*Distribution analysis, correlation matrix, and key relationships*
+
+![Model Performance](Task-1-student-performance-indicator/assets/plot2.png)
+*Model predictions vs actual values and performance metrics*
+
+### 📊 Performance Metrics
+- **R² Score**: Measures how well the model explains the variance
+- **RMSE**: Root Mean Square Error for prediction accuracy  
+- **MAE**: Mean Absolute Error for average prediction difference
+
+### 🔍 Key Features Analyzed
+- Study hours per week
+- Attendance rate  
+- Parental involvement
+- Access to resources
+- Extracurricular activities
+- Sleep hours
+- Previous scores
+- Motivation level
+- Internet access
+- Tutoring sessions
+- Family income
+- Teacher quality
+- School type
+- Peer influence
+- Physical activity
+- Learning disabilities
+- Parental education level
+- Distance from home
+- Gender
+
+### 📝 Key Insights
+1. **Study Hours**: Strong positive correlation with exam scores
+2. **Attendance**: Regular attendance significantly impacts performance
+3. **Parental Involvement**: Supportive parents boost student outcomes
+4. **Resource Access**: Better resources lead to better performance
+
+### 🎓 Learning Outcomes
+- Data preprocessing and cleaning techniques
+- Exploratory data analysis (EDA)
+- Feature importance analysis
+- Linear regression modeling
+- Model evaluation and validation
+- Data visualization best practices
+
+---
+
+## 🎯 Task 2: Customer Segmentation
+
+A comprehensive clustering analysis project that segments mall customers based on income and spending patterns using K-Means and DBSCAN algorithms.
+
+### 🎯 Overview
+- **Dataset**: Mall Customers with Annual Income and Spending Score data
+- **Goal**: Segment customers into distinct groups for targeted marketing
+- **Approach**: K-Means clustering with optimal cluster selection using Elbow Method and Silhouette Analysis
+- **Tools**: Python, pandas, scikit-learn, matplotlib, seaborn
+- **Bonus**: DBSCAN clustering comparison and business insights
+
+### 📋 Requirements
+```bash
+pip install pandas numpy matplotlib seaborn scikit-learn jupyter
+```
+
+### 💻 Code Implementation
 
 #### Customer Data Loading and Preprocessing
 ```python
@@ -206,45 +265,10 @@ for i in range(optimal_k):
     print(f"Cluster {i}: {len(cluster_data)} customers")
     print(f"  Avg Income: ${cluster_data[income_col].mean():.1f}k")
     print(f"  Avg Spending: {cluster_data[spending_col].mean():.1f}")
-=======
-
-# Handle categorical variables
-categorical_cols = df.select_dtypes(include=['object']).columns
-if len(categorical_cols) > 0:
-    df_encoded = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
-    X = df_encoded.select_dtypes(include=[np.number]).drop(columns=[target])
-
-# Split the data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Train the model
-model = LinearRegression()
-model.fit(X_train, y_train)
-
-# Make predictions
-y_pred = model.predict(X_test)
-
-# Evaluate the model
-r2 = r2_score(y_test, y_pred)
-rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-mae = mean_absolute_error(y_test, y_pred)
-
-print(f"R² Score: {r2:.4f}")
-print(f"RMSE: {rmse:.4f}")
-print(f"MAE: {mae:.4f}")
->>>>>>> bed2449d5483837b07ebbc4bf12381705f17dee8
 ```
 
 ### 📈 Results & Visualizations
 
-#### Task 1: Student Performance Analysis
-![Analysis Overview](Task-1-student-performance-indicator/assets/plot1.png)
-*Distribution analysis, correlation matrix, and key relationships*
-
-![Model Performance](Task-1-student-performance-indicator/assets/plot2.png)
-*Model predictions vs actual values and performance metrics*
-
-#### Task 2: Customer Segmentation Analysis
 ![Data Exploration](Task-2-Customer-Segmentation/assets/data_exploration.png)
 *Customer income and spending score distributions with scatter plot*
 
@@ -254,80 +278,24 @@ print(f"MAE: {mae:.4f}")
 ![Clustering Results](Task-2-Customer-Segmentation/assets/clustering_results.png)
 *K-Means clustering results with centroids and DBSCAN comparison*
 
-### 🔍 Key Features Analyzed
-
-#### Task 1: Student Performance Factors
-- Study hours per week
-- Attendance rate  
-- Parental involvement
-- Access to resources
-- Extracurricular activities
-- Sleep hours
-- Previous scores
-- Motivation level
-- Internet access
-- Tutoring sessions
-- Family income
-- Teacher quality
-- School type
-- Peer influence
-- Physical activity
-- Learning disabilities
-- Parental education level
-- Distance from home
-- Gender
-
-#### Task 2: Customer Segmentation Features
-- **Annual Income (k$)**: Customer's yearly income in thousands
-- **Spending Score (1-100)**: Mall-assigned score based on customer behavior and spending patterns
-- **Derived Segments**: Premium, Conservative, Aspirational, and Budget-conscious customer groups
-
 ### 📊 Performance Metrics
-
-#### Task 1: Regression Metrics
-- **R² Score**: Measures how well the model explains the variance
-- **RMSE**: Root Mean Square Error for prediction accuracy  
-- **MAE**: Mean Absolute Error for average prediction difference
-
-#### Task 2: Clustering Metrics
 - **Silhouette Score**: Measures cluster separation and cohesion (-1 to 1, higher is better)
 - **Inertia**: Within-cluster sum of squared distances (lower is better for compact clusters)
 - **Elbow Method**: Visual technique to find optimal number of clusters
 - **Business Impact**: Customer segment identification for targeted marketing strategies
 
-### 🛠️ Technologies Used
-- **Python 3.x**
-- **pandas** - Data manipulation and analysis
-- **numpy** - Numerical computing
-- **matplotlib** - Data visualization
-- **seaborn** - Statistical data visualization
-- **scikit-learn** - Machine learning library
+### 🔍 Key Features Analyzed
+- **Annual Income (k$)**: Customer's yearly income in thousands
+- **Spending Score (1-100)**: Mall-assigned score based on customer behavior and spending patterns
+- **Derived Segments**: Premium, Conservative, Aspirational, and Budget-conscious customer groups
 
 ### 📝 Key Insights
-
-#### Task 1: Student Performance Insights
-1. **Study Hours**: Strong positive correlation with exam scores
-2. **Attendance**: Regular attendance significantly impacts performance
-3. **Parental Involvement**: Supportive parents boost student outcomes
-4. **Resource Access**: Better resources lead to better performance
-
-#### Task 2: Customer Segmentation Insights
 1. **Premium Segment**: High income + High spending → VIP programs and luxury products
 2. **Conservative Segment**: High income + Low spending → Value-focused marketing
 3. **Aspirational Segment**: Low income + High spending → Payment plans and affordable luxury
 4. **Budget Segment**: Low income + Low spending → Price competition and discounts
 
 ### 🎓 Learning Outcomes
-
-#### Task 1: Supervised Learning
-- Data preprocessing and cleaning techniques
-- Exploratory data analysis (EDA)
-- Feature importance analysis
-- Linear regression modeling
-- Model evaluation and validation
-- Data visualization best practices
-
-#### Task 2: Unsupervised Learning
 - Customer segmentation using clustering
 - K-Means algorithm implementation
 - Optimal cluster selection techniques
@@ -337,18 +305,19 @@ print(f"MAE: {mae:.4f}")
 
 ---
 
-## 👨‍💻 Author
-
-**Abdelkader**
-
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Abdelkader7151)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/abdelrhman-abdelkader-6313a4291/)
+### 🛠️ Technologies Used
+- **Python 3.x**
+- **pandas** - Data manipulation and analysis
+- **numpy** - Numerical computing
+- **matplotlib** - Data visualization
+- **seaborn** - Statistical data visualization
+- **scikit-learn** - Machine learning library
 
 ---
 
 ## 👨‍💻 Author
 
-**Abdelrhman Abdelkader**
+**Abdelkader**
 
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Abdelkader7151)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/abdelrhman-abdelkader-6313a4291/)
