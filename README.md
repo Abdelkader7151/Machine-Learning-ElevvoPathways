@@ -269,14 +269,29 @@ for i in range(optimal_k):
 
 ### 📈 Results & Visualizations
 
+#### Data Exploration
 ![Data Exploration](Task-2-Customer-Segmentation/assets/data_exploration.png)
 *Customer income and spending score distributions with scatter plot*
 
+#### Demographics Analysis
+![Demographics Analysis](Task-2-Customer-Segmentation/assets/demographics_analysis.png)
+*Age and gender distribution analysis with income/spending relationships*
+
+#### Cluster Optimization
 ![Cluster Optimization](Task-2-Customer-Segmentation/assets/cluster_optimization.png)
 *Elbow Method and Silhouette Analysis for optimal cluster selection*
 
+#### Clustering Results
 ![Clustering Results](Task-2-Customer-Segmentation/assets/clustering_results.png)
 *K-Means clustering results with centroids and DBSCAN comparison*
+
+#### Advanced Cluster Analysis
+![Advanced Cluster Analysis](Task-2-Customer-Segmentation/assets/advanced_cluster_analysis.png)
+*Comprehensive cluster characteristics including 3D visualization, silhouette analysis, and customer value metrics*
+
+#### Clustering Algorithm Comparison
+![Clustering Comparison](Task-2-Customer-Segmentation/assets/clustering_comparison.png)
+*Comparison of different K values and clustering algorithms with performance metrics*
 
 ### 📊 Performance Metrics
 - **Silhouette Score**: Measures cluster separation and cohesion (-1 to 1, higher is better)
