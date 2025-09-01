@@ -89,6 +89,7 @@ plt.show()
 # Prepare features and target
 X = df.select_dtypes(include=[np.number]).drop(columns=[target])
 y = df[target]
+<<<<<<< HEAD
 
 # Handle categorical variables
 categorical_cols = df.select_dtypes(include=['object']).columns
@@ -205,6 +206,33 @@ for i in range(optimal_k):
     print(f"Cluster {i}: {len(cluster_data)} customers")
     print(f"  Avg Income: ${cluster_data[income_col].mean():.1f}k")
     print(f"  Avg Spending: {cluster_data[spending_col].mean():.1f}")
+=======
+
+# Handle categorical variables
+categorical_cols = df.select_dtypes(include=['object']).columns
+if len(categorical_cols) > 0:
+    df_encoded = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
+    X = df_encoded.select_dtypes(include=[np.number]).drop(columns=[target])
+
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train the model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Make predictions
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+r2 = r2_score(y_test, y_pred)
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+mae = mean_absolute_error(y_test, y_pred)
+
+print(f"R² Score: {r2:.4f}")
+print(f"RMSE: {rmse:.4f}")
+print(f"MAE: {mae:.4f}")
+>>>>>>> bed2449d5483837b07ebbc4bf12381705f17dee8
 ```
 
 ### 📈 Results & Visualizations
@@ -312,6 +340,15 @@ for i in range(optimal_k):
 ## 👨‍💻 Author
 
 **Abdelkader**
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Abdelkader7151)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/abdelrhman-abdelkader-6313a4291/)
+
+---
+
+## 👨‍💻 Author
+
+**Abdelrhman Abdelkader**
 
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Abdelkader7151)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/abdelrhman-abdelkader-6313a4291/)
