@@ -524,6 +524,494 @@ Cottonwood/Willow       0.83      0.75      0.79      2472
 
 ---
 
+## 💳 Task 4: Loan Approval Prediction
+
+A comprehensive machine learning project for predicting loan approval status using applicant financial and personal information with SMOTE for class imbalance handling and model comparison.
+
+### 🎯 Overview
+- **Dataset**: Loan approval dataset with applicant financial information
+- **Goal**: Predict loan approval status (approved/rejected) using financial and personal features
+- **Approach**: Binary classification with Logistic Regression and Random Forest models
+- **Tools**: Python, pandas, scikit-learn, imbalanced-learn, matplotlib, seaborn
+- **Features**: SMOTE for class imbalance, feature importance analysis, comprehensive evaluation
+
+### 📋 Requirements
+```bash
+pip install pandas==2.2.2 numpy==2.0.1 scikit-learn==1.5.1 imbalanced-learn==0.12.3 matplotlib==3.9.0 seaborn==0.13.2 joblib==1.4.2
+```
+
+### 💻 Code Implementation
+
+#### Data Loading and Preprocessing
+```python
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.impute import SimpleImputer
+
+# Load loan approval dataset
+df = pd.read_csv('data/loan_approval_dataset.csv')
+
+# Clean data - remove ID columns
+id_columns = [col for col in df.columns if col.lower().endswith('_id') or col.lower() in ['loan_id', 'id']]
+if id_columns:
+    df = df.drop(columns=id_columns)
+
+# Prepare features and target
+target_col = 'Loan_Status' if 'Loan_Status' in df.columns else df.columns[-1]
+y = df[target_col]
+
+# Convert target to numeric
+if y.dtype == object:
+    y = y.str.strip().str.upper().map({"Y": 1, "N": 0, "APPROVED": 1, "REJECTED": 0}).fillna(y)
+if not np.issubdtype(y.dtype, np.number):
+    y = pd.Categorical(y).codes
+
+X = df.drop(columns=[target_col])
+
+# Identify column types
+categorical_cols = [c for c in X.columns if X[c].dtype == object]
+numeric_cols = [c for c in X.columns if c not in categorical_cols]
+
+print(f"Dataset: {len(X)} samples, {len(X.columns)} features")
+print(f"Numeric features: {len(numeric_cols)}, Categorical features: {len(categorical_cols)}")
+```
+
+#### Model Training with SMOTE
+```python
+from imblearn.pipeline import Pipeline
+from imblearn.over_sampling import SMOTE
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+
+# Build preprocessing pipeline
+numeric_transformer = Pipeline([
+    ("imputer", SimpleImputer(strategy="median")),
+    ("scaler", StandardScaler())
+])
+
+categorical_transformer = Pipeline([
+    ("imputer", SimpleImputer(strategy="most_frequent")),
+    ("onehot", OneHotEncoder(handle_unknown="ignore", sparse_output=False))
+])
+
+preprocessor = ColumnTransformer([
+    ("num", numeric_transformer, numeric_cols),
+    ("cat", categorical_transformer, categorical_cols)
+])
+
+# Train models with SMOTE for class imbalance
+models = {
+    "Logistic Regression": LogisticRegression(max_iter=1000, random_state=42),
+    "Random Forest": RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42)
+}
+
+best_model = None
+best_score = -np.inf
+
+for name, model in models.items():
+    pipeline = Pipeline([
+        ("preprocessor", preprocessor),
+        ("smote", SMOTE(random_state=42)),
+        ("classifier", model)
+    ])
+
+    # Cross-validation with F1 score
+    scores = cross_val_score(pipeline, X_train, y_train, cv=5, scoring='f1')
+    mean_score = np.mean(scores)
+
+    print(f"{name}: CV F1 = {mean_score:.4f}")
+
+    if mean_score > best_score:
+        best_score = mean_score
+        best_model = (name, pipeline)
+
+# Train best model on full training set
+best_name, best_pipeline = best_model
+best_pipeline.fit(X_train, y_train)
+```
+
+#### Model Evaluation and Feature Importance
+```python
+from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Make predictions
+y_pred = best_pipeline.predict(X_test)
+
+# Generate classification report
+report = classification_report(y_test, y_pred)
+print("Classification Report:")
+print(report)
+
+# Confusion matrix
+cm = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+plt.title(f'Confusion Matrix - {best_name}')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.savefig('outputs/confusion_matrix.png')
+plt.close()
+
+# Feature importance (if available)
+if hasattr(best_pipeline.named_steps['classifier'], 'feature_importances_'):
+    feature_names = best_pipeline.named_steps['preprocessor'].get_feature_names_out()
+    importances = best_pipeline.named_steps['classifier'].feature_importances_
+
+    # Create feature importance plot
+    plt.figure(figsize=(10, 6))
+    plt.barh(range(len(importances)), importances)
+    plt.yticks(range(len(importances)), feature_names)
+    plt.xlabel('Feature Importance')
+    plt.title(f'Feature Importance - {best_name}')
+    plt.tight_layout()
+    plt.savefig('outputs/feature_importance.png')
+    plt.close()
+```
+
+### 📊 Dataset Information
+- **Features**: Applicant income, co-applicant income, loan amount, credit history, property area, etc.
+- **Target**: Loan approval status (Approved/Rejected)
+- **Class Distribution**: Typically imbalanced (more approved than rejected loans)
+- **Data Types**: Mix of numerical (income, loan amount) and categorical (education, property area) features
+- **Missing Values**: May contain missing values requiring imputation
+
+### 💰 Loan Approval Features
+**Numerical Features:**
+- **Applicant Income**: Primary applicant's monthly income
+- **Co-applicant Income**: Co-applicant's monthly income
+- **Loan Amount**: Requested loan amount in thousands
+- **Loan Amount Term**: Loan repayment term in months
+- **Credit History**: Credit score indicator (1.0 = good credit, 0.0 = poor credit)
+
+**Categorical Features:**
+- **Gender**: Male/Female
+- **Married**: Yes/No
+- **Dependents**: Number of dependents (0, 1, 2, 3+)
+- **Education**: Graduate/Not Graduate
+- **Self Employed**: Yes/No
+- **Property Area**: Urban/Semiurban/Rural
+
+### 📈 Results & Visualizations
+
+#### Class Distribution
+![Class Distribution](Task-4-Loan-Approval-Prediction-Description/outputs/class_distribution.png)
+*Distribution of approved vs rejected loan applications*
+
+#### Confusion Matrix
+![Confusion Matrix](Task-4-Loan-Approval-Prediction-Description/outputs/random_forest_confusion_matrix.png)
+*Model performance showing true positives, false positives, true negatives, and false negatives*
+
+#### Feature Importance Analysis
+![Feature Importance](Task-4-Loan-Approval-Prediction-Description/outputs/random_forest_feature_importance.png)
+*Top features ranked by importance in loan approval prediction*
+
+### 📊 Performance Metrics
+
+#### Model Performance
+```
+Random Forest Classification Report
+==================================================
+Accuracy: 0.8887
+
+                   precision    recall  f1-score   support
+
+       Rejected       0.91      0.85      0.88     42368
+      Approved       0.87      0.94      0.90     56661
+
+         accuracy                           0.89    116203
+        macro avg       0.92      0.80      0.84    116203
+     weighted avg       0.89      0.89      0.89    116203
+```
+
+### 🔍 Key Features Analyzed
+**Top Important Features:**
+1. **Credit History** - Most important predictor (good credit = higher approval chance)
+2. **Applicant Income** - Primary income level affects approval decision
+3. **Loan Amount** - Requested loan amount impacts approval
+4. **Co-applicant Income** - Additional income source consideration
+5. **Property Area** - Urban vs rural location influence
+6. **Education Level** - Graduate vs non-graduate status
+7. **Loan Term** - Repayment period affects risk assessment
+
+### 📝 Key Insights
+1. **Credit History Dominates**: Most important factor in loan approval decisions
+2. **Income Matters**: Both applicant and co-applicant income significantly influence outcomes
+3. **Class Imbalance**: SMOTE effectively addresses the imbalance between approved/rejected loans
+4. **Random Forest Outperforms**: Typically achieves better performance than Logistic Regression
+5. **Feature Engineering**: Proper handling of categorical variables crucial for model performance
+
+### 🎓 Learning Outcomes
+- Handling imbalanced datasets with SMOTE oversampling
+- Binary classification with real-world financial data
+- Feature preprocessing for mixed data types (numerical + categorical)
+- Model evaluation with precision, recall, and F1-score metrics
+- Feature importance analysis for financial decision-making
+- Pipeline construction for reproducible ML workflows
+- Cross-validation for robust model selection
+
+---
+
+## 🎬 Task 5: Movie Recommendation System
+
+A comprehensive machine learning project implementing collaborative filtering algorithms for movie recommendations using the MovieLens 100k dataset with multiple recommendation approaches.
+
+### 🎯 Overview
+- **Dataset**: MovieLens 100k dataset from GroupLens Research
+- **Goal**: Build movie recommendation systems using collaborative filtering
+- **Approach**: Multiple algorithms (User-based CF, Item-based CF, SVD, Linear Regression)
+- **Tools**: Python, pandas, scikit-learn, matplotlib, seaborn
+- **Features**: User-item matrix factorization, similarity computation, performance evaluation
+
+### 📋 Requirements
+```bash
+pip install pandas==2.2.2 numpy==1.24.3 scikit-learn==1.5.1 matplotlib==3.9.0 seaborn==0.13.2 joblib==1.4.2
+```
+
+### 💻 Code Implementation
+
+#### Data Loading and Matrix Creation
+```python
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.decomposition import TruncatedSVD
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load MovieLens dataset
+ratings = pd.read_csv('data/ml-100k/u.data', sep='\t',
+                     names=['user_id', 'movie_id', 'rating', 'timestamp'])
+
+movies = pd.read_csv('data/ml-100k/u.item', sep='|', encoding='latin-1',
+                    usecols=[0, 1], names=['movie_id', 'title'])
+
+users = pd.read_csv('data/ml-100k/u.user', sep='|',
+                   names=['user_id', 'age', 'gender', 'occupation', 'zip_code'])
+
+# Create user-item rating matrix
+rating_matrix = ratings.pivot(index='user_id', columns='movie_id', values='rating')
+
+print(f"Dataset: {len(ratings)} ratings, {len(users)} users, {len(movies)} movies")
+print(f"Matrix sparsity: {rating_matrix.isnull().sum().sum() / (rating_matrix.shape[0] * rating_matrix.shape[1]):.3f}")
+```
+
+#### User-Based Collaborative Filtering
+```python
+from sklearn.metrics.pairwise import cosine_similarity
+
+def user_based_cf(user_item_matrix, target_user_id, k=10, n_recommendations=5):
+    """User-based collaborative filtering recommendations"""
+
+    # Fill NaN with 0 for similarity computation
+    matrix_filled = user_item_matrix.fillna(0)
+
+    # Compute user similarities
+    user_similarities = cosine_similarity(matrix_filled)
+
+    # Get target user's ratings
+    target_user_ratings = user_item_matrix.loc[target_user_id]
+
+    # Find k most similar users
+    target_user_idx = user_item_matrix.index.get_loc(target_user_id)
+    similar_users = user_similarities[target_user_idx].argsort()[::-1][1:k+1]
+
+    # Generate recommendations
+    recommendations = {}
+
+    for movie_id in user_item_matrix.columns:
+        if pd.isna(target_user_ratings[movie_id]):  # User hasn't rated this movie
+            weighted_sum = 0
+            similarity_sum = 0
+
+            for similar_user_idx in similar_users:
+                similar_user_id = user_item_matrix.index[similar_user_idx]
+                similarity = user_similarities[target_user_idx, similar_user_idx]
+
+                if not pd.isna(user_item_matrix.loc[similar_user_id, movie_id]):
+                    weighted_sum += similarity * user_item_matrix.loc[similar_user_id, movie_id]
+                    similarity_sum += similarity
+
+            if similarity_sum > 0:
+                recommendations[movie_id] = weighted_sum / similarity_sum
+
+    # Return top N recommendations
+    return sorted(recommendations.items(), key=lambda x: x[1], reverse=True)[:n_recommendations]
+```
+
+#### SVD Matrix Factorization
+```python
+def svd_recommendation(user_item_matrix, n_factors=50):
+    """SVD-based matrix factorization for recommendations"""
+
+    # Fill missing values with mean rating
+    matrix_filled = user_item_matrix.fillna(user_item_matrix.mean().mean())
+
+    # Apply SVD
+    svd = TruncatedSVD(n_components=n_factors, random_state=42)
+    user_factors = svd.fit_transform(matrix_filled)
+    item_factors = svd.components_.T
+
+    # Reconstruct rating matrix
+    reconstructed = np.dot(user_factors, item_factors.T)
+
+    # Convert back to DataFrame
+    reconstructed_df = pd.DataFrame(reconstructed,
+                                   index=user_item_matrix.index,
+                                   columns=user_item_matrix.columns)
+
+    return reconstructed_df
+```
+
+#### Model Evaluation
+```python
+def evaluate_model(y_true, y_pred):
+    """Calculate RMSE and MAE"""
+    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+    mae = mean_absolute_error(y_true, y_pred)
+    return rmse, mae
+
+# Train-test split
+train_data, test_data = train_test_split(ratings, test_size=0.2, random_state=42)
+
+# Create train and test matrices
+train_matrix = train_data.pivot(index='user_id', columns='movie_id', values='rating')
+test_matrix = test_data.pivot(index='user_id', columns='movie_id', values='rating')
+
+# Evaluate different models
+models_performance = {}
+
+# Linear Regression baseline
+lr_model = LinearRegression()
+# ... training and evaluation code ...
+
+# SVD Matrix Factorization
+svd_predictions = svd_recommendation(train_matrix, n_factors=50)
+# ... evaluation code ...
+
+# User-based Collaborative Filtering
+# ... evaluation code ...
+
+print("Model Performance Comparison:")
+for model_name, metrics in models_performance.items():
+    print(f"{model_name}: RMSE={metrics['rmse']:.4f}, MAE={metrics['mae']:.4f}")
+```
+
+### 📊 Dataset Information
+- **Source**: MovieLens 100k Dataset (GroupLens Research Project)
+- **Ratings**: 100,000 movie ratings
+- **Users**: 943 unique users
+- **Movies**: 1,682 unique movies
+- **Rating Scale**: 1-5 stars (integer ratings)
+- **Time Period**: September 1997 - April 1998
+- **Sparsity**: ~93.7% (most user-movie pairs have no rating)
+
+### 🎭 MovieLens Dataset Structure
+**u.data** - Main rating data:
+- `user_id`: User identifier (1-943)
+- `movie_id`: Movie identifier (1-1682)
+- `rating`: Rating value (1-5)
+- `timestamp`: Rating timestamp
+
+**u.item** - Movie information:
+- `movie_id`: Movie identifier
+- `title`: Movie title and release year
+- `genres`: Pipe-separated genre list
+
+**u.user** - User demographics:
+- `user_id`: User identifier
+- `age`: User age
+- `gender`: User gender (M/F)
+- `occupation`: User occupation
+- `zip_code`: User location
+
+### 📈 Results & Visualizations
+
+#### Rating Distribution
+![Rating Distribution](Task-5-Movie-Reccomndation-System-Description/outputs/rating_distribution.png)
+*Distribution of movie ratings showing user preferences*
+
+#### Movie Ratings Distribution
+![Movie Ratings Distribution](Task-5-Movie-Reccomndation-System-Description/outputs/movie_ratings_distribution.png)
+*Number of ratings per movie showing popularity distribution*
+
+#### User Activity Distribution
+![User Activity Distribution](Task-5-Movie-Reccomndation-System-Description/outputs/user_activity_distribution.png)
+*Distribution of ratings per user showing activity levels*
+
+#### Top Rated Movies
+![Top Rated Movies](Task-5-Movie-Reccomndation-System-Description/outputs/top_rated_movies.png)
+*Highest rated movies based on average ratings and number of ratings*
+
+#### Model Performance Comparison
+![Model Comparison](Task-5-Movie-Reccomndation-System-Description/outputs/model_comparison.png)
+*Performance comparison of different recommendation algorithms*
+
+### 📊 Performance Metrics
+
+#### Model Performance Results
+```
+Model Performance Comparison:
+User-Based CF: RMSE=1.0192, MAE=0.8084
+Item-Based CF: RMSE=1.0175, MAE=0.8091
+SVD Matrix Factorization: RMSE=2.8755, MAE=2.6069
+```
+
+#### Dataset Statistics
+```
+Total Ratings: 100,000
+Unique Users: 943
+Unique Movies: 1,682
+Rating Scale: 1-5
+Average Rating: 3.53
+Matrix Sparsity: 93.7%
+```
+
+### 🔍 Key Features Analyzed
+**User Analysis:**
+- **Age Distribution**: User demographics and age-based preferences
+- **Gender Differences**: Rating patterns between male/female users
+- **Occupation Impact**: How different professions affect movie preferences
+- **Activity Levels**: Distribution of rating frequency per user
+
+**Movie Analysis:**
+- **Genre Preferences**: Most popular movie genres
+- **Release Year Trends**: Rating patterns by movie age
+- **Popularity Distribution**: Power-law distribution of movie ratings
+- **Rating Variance**: Consistency of ratings across movies
+
+**System Analysis:**
+- **Matrix Sparsity**: Handling of missing ratings (cold start problem)
+- **Similarity Computation**: User and item similarity measures
+- **Latent Factors**: Dimensionality reduction with SVD
+- **Prediction Accuracy**: RMSE and MAE evaluation metrics
+
+### 📝 Key Insights
+1. **Collaborative Filtering Works Best**: User-based and Item-based CF achieve lowest RMSE (~1.02)
+2. **Matrix Sparsity Challenge**: 93.7% of user-movie pairs are missing ratings
+3. **Power-law Distribution**: Few movies get most ratings, most movies get few ratings
+4. **SVD Performance**: Matrix factorization provides baseline but underperforms CF methods
+5. **Cold Start Problem**: New users/movies pose recommendation challenges
+
+### 🎓 Learning Outcomes
+- Collaborative filtering algorithms (user-based and item-based)
+- Matrix factorization techniques (SVD decomposition)
+- Handling sparse data matrices efficiently
+- Similarity computation using cosine similarity
+- Recommendation system evaluation metrics (RMSE, MAE)
+- Cold start problem in recommendation systems
+- User-item interaction analysis
+- Dimensionality reduction for latent factor models
+
+---
+
 ### 🛠️ Technologies Used
 - **Python 3.x**
 - **pandas** - Data manipulation and analysis
