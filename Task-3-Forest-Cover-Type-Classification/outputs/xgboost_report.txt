@@ -1,0 +1,17 @@
+XGBoost Classification Report
+==================================================
+Accuracy: 0.8306
+
+                   precision    recall  f1-score   support
+
+       Spruce/Fir       0.83      0.80      0.81    190656
+   Lodgepole Pine       0.83      0.87      0.85    254971
+   Ponderosa Pine       0.83      0.88      0.85     32179
+Cottonwood/Willow       0.83      0.75      0.79      2472
+            Aspen       0.87      0.35      0.50      8544
+      Douglas-fir       0.78      0.64      0.70     15630
+        Krummholz       0.91      0.84      0.87     18459
+
+         accuracy                           0.83    522911
+        macro avg       0.84      0.73      0.77    522911
+     weighted avg       0.83      0.83      0.83    522911

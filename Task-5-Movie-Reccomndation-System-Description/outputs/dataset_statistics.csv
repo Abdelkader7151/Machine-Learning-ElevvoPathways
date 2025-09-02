@@ -1,0 +1,2 @@
+total_ratings,unique_users,unique_movies,rating_scale,avg_rating,sparsity
+100000,943,1682,1-5,3.52986,0.9369533063577546

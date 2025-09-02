@@ -1,0 +1,17 @@
+Random Forest Classification Report
+==================================================
+Accuracy: 0.8887
+
+                   precision    recall  f1-score   support
+
+       Spruce/Fir       0.91      0.85      0.88     42368
+   Lodgepole Pine       0.87      0.94      0.90     56661
+   Ponderosa Pine       0.92      0.93      0.92      7151
+Cottonwood/Willow       0.91      0.82      0.87       549
+            Aspen       0.96      0.40      0.56      1899
+      Douglas-fir       0.91      0.79      0.84      3473
+        Krummholz       0.98      0.87      0.92      4102
+
+         accuracy                           0.89    116203
+        macro avg       0.92      0.80      0.84    116203
+     weighted avg       0.89      0.89      0.89    116203

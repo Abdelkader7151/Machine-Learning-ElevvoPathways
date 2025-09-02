@@ -320,6 +320,210 @@ for i in range(optimal_k):
 
 ---
 
+## 🌲 Task 3: Forest Cover Type Classification
+
+A comprehensive machine learning project that predicts forest cover types using cartographic and environmental features from the Covertype dataset using Random Forest and XGBoost algorithms.
+
+### 🎯 Overview
+- **Dataset**: Covertype Dataset from UCI Machine Learning Repository
+- **Goal**: Predict 7 forest cover types using 54 cartographic and environmental features
+- **Approach**: Multi-class classification with Random Forest and XGBoost models
+- **Tools**: Python, pandas, scikit-learn, XGBoost, matplotlib, seaborn
+- **Features**: Hyperparameter tuning, model comparison, feature importance analysis
+
+### 📋 Requirements
+```bash
+pip install pandas==2.2.2 numpy==2.0.1 scikit-learn==1.5.1 matplotlib==3.9.0 seaborn==0.13.2 xgboost==2.1.1 requests==2.32.3 joblib==1.4.2 plotly==5.22.0 ucimlrepo==0.0.7
+```
+
+### 💻 Code Implementation
+
+#### Data Loading and Preprocessing
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.preprocessing import StandardScaler
+import xgboost as xgb
+from ucimlrepo import fetch_ucirepo
+
+# Load Covertype dataset from UCI
+covertype = fetch_ucirepo(id=31)
+X = covertype.data.features
+y = covertype.data.targets
+df = pd.concat([X, y], axis=1)
+
+# Preprocess data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Scale continuous features
+scaler = StandardScaler()
+continuous_features = X_train.columns[:10]  # First 10 are continuous
+X_train_scaled = X_train.copy()
+X_test_scaled = X_test.copy()
+X_train_scaled[continuous_features] = scaler.fit_transform(X_train[continuous_features])
+X_test_scaled[continuous_features] = scaler.transform(X_test[continuous_features])
+```
+
+#### Model Training and Comparison
+```python
+# Train Random Forest
+rf_model = RandomForestClassifier(n_estimators=200, max_depth=20, random_state=42, n_jobs=-1)
+rf_model.fit(X_train_scaled, y_train)
+rf_pred = rf_model.predict(X_test_scaled)
+
+# Train XGBoost
+xgb_model = xgb.XGBClassifier(n_estimators=200, max_depth=6, learning_rate=0.1,
+                              random_state=42, eval_metric='mlogloss')
+xgb_model.fit(X_train_scaled, y_train)
+xgb_pred = xgb_model.predict(X_test_scaled)
+
+# Evaluate models
+print("Random Forest Accuracy:", accuracy_score(y_test, rf_pred))
+print("XGBoost Accuracy:", accuracy_score(y_test, xgb_pred))
+```
+
+#### Feature Importance Analysis
+```python
+# Get feature importance from Random Forest
+feature_importance = pd.DataFrame({
+    'feature': X_train.columns,
+    'importance': rf_model.feature_importances_
+}).sort_values('importance', ascending=False)
+
+# Display top 10 most important features
+print("Top 10 Most Important Features:")
+for i, (_, row) in enumerate(feature_importance.head(10).iterrows(), 1):
+    print(f"{i}. {row['feature']}: {row['importance']:.4f}")
+```
+
+### 📊 Dataset Information
+- **Source**: UCI Machine Learning Repository (ID: 31)
+- **Size**: 581,012 samples, 55 features (54 predictors + 1 target)
+- **Features**: 10 continuous (elevation, aspect, slope, etc.) + 44 categorical (wilderness areas, soil types)
+- **Target Classes**: 7 forest cover types
+- **Auto-download**: Dataset is automatically downloaded using ucimlrepo package
+
+### 🌲 Forest Cover Types
+1. **Spruce/Fir** - Most common type
+2. **Lodgepole Pine** - Second most common type
+3. **Ponderosa Pine** - Medium frequency
+4. **Cottonwood/Willow** - Least common type
+5. **Aspen** - Medium frequency
+6. **Douglas-fir** - Common type
+7. **Krummholz** - Alpine/subalpine type
+
+### 📈 Results & Visualizations
+
+#### Class Distribution
+![Class Distribution](Task-3-Forest-Cover-Type-Classification/outputs/class_distribution.png)
+*Distribution of the 7 forest cover types in the dataset*
+
+#### Model Performance Comparison
+![Model Comparison](Task-3-Forest-Cover-Type-Classification/outputs/model_comparison.png)
+*Performance comparison between Random Forest and XGBoost models*
+
+#### Confusion Matrices
+
+**Random Forest Confusion Matrix:**
+![Random Forest Confusion Matrix](Task-3-Forest-Cover-Type-Classification/outputs/random_forest_confusion_matrix.png)
+*Multi-class confusion matrix showing Random Forest performance*
+
+**XGBoost Confusion Matrix:**
+![XGBoost Confusion Matrix](Task-3-Forest-Cover-Type-Classification/outputs/xgboost_confusion_matrix.png)
+*Multi-class confusion matrix showing XGBoost performance*
+
+#### Feature Importance Analysis
+
+**Random Forest Feature Importance:**
+![Random Forest Feature Importance](Task-3-Forest-Cover-Type-Classification/outputs/random_forest_feature_importance.png)
+*Top 20 most important features according to Random Forest model*
+
+**XGBoost Feature Importance:**
+![XGBoost Feature Importance](Task-3-Forest-Cover-Type-Classification/outputs/xgboost_feature_importance.png)
+*Top 20 most important features according to XGBoost model*
+
+### 📊 Performance Metrics
+
+#### Random Forest Results
+```
+Random Forest Classification Report
+==================================================
+Accuracy: 0.8513
+
+                   precision    recall  f1-score   support
+
+       Spruce/Fir       0.87      0.81      0.84    190656
+   Lodgepole Pine       0.83      0.92      0.87    254971
+   Ponderosa Pine       0.85      0.89      0.87     32179
+Cottonwood/Willow       0.86      0.69      0.76      2472
+            Aspen       0.94      0.25      0.40      8544
+      Douglas-fir       0.85      0.62      0.71     15630
+        Krummholz       0.94      0.81      0.87     18459
+
+         accuracy                           0.85    522911
+        macro avg       0.88      0.71      0.76    522911
+     weighted avg       0.85      0.85      0.85    522911
+```
+
+#### XGBoost Results
+```
+XGBoost Classification Report
+==================================================
+Accuracy: 0.8306
+
+                   precision    recall  f1-score   support
+
+       Spruce/Fir       0.83      0.80      0.81    190656
+   Lodgepole Pine       0.83      0.87      0.85    254971
+   Ponderosa Pine       0.83      0.88      0.85     32179
+Cottonwood/Willow       0.83      0.75      0.79      2472
+            Aspen       0.87      0.35      0.50      8544
+      Douglas-fir       0.78      0.64      0.70     15630
+        Krummholz       0.91      0.84      0.87     18459
+
+         accuracy                           0.83    522911
+        macro avg       0.84      0.73      0.77    522911
+     weighted avg       0.83      0.83      0.83    522911
+```
+
+### 🔍 Key Features Analyzed
+**Top 10 Most Important Features (Random Forest):**
+1. **Elevation** (26.62%) - Most important predictor
+2. **Horizontal_Distance_To_Roadways** (9.14%) - Road accessibility
+3. **Horizontal_Distance_To_Fire_Points** (8.17%) - Fire proximity
+4. **Horizontal_Distance_To_Hydrology** (5.01%) - Water proximity
+5. **Wilderness_Area4** (4.79%) - Specific wilderness designation
+6. **Vertical_Distance_To_Hydrology** (4.74%) - Vertical water distance
+7. **Aspect** (4.42%) - Compass direction of slope
+8. **Hillshade_Noon** (4.31%) - Solar exposure at noon
+9. **Hillshade_9am** (3.96%) - Morning solar exposure
+10. **Hillshade_3pm** (3.92%) - Afternoon solar exposure
+
+### 📝 Key Insights
+1. **Elevation Dominates**: Elevation is by far the most important feature (26.6% importance)
+2. **Random Forest Outperforms**: Random Forest achieved 85.13% vs XGBoost's 83.06% accuracy
+3. **Distance Features Matter**: Proximity to roadways, fire points, and water sources are crucial
+4. **Wilderness Areas**: Specific wilderness designations significantly influence cover type
+5. **Solar Exposure**: Hillshade features help determine vegetation types
+6. **Class Imbalance**: Lodgepole Pine and Spruce/Fir are most common, Cottonwood/Willow is rarest
+
+### 🎓 Learning Outcomes
+- Multi-class classification with imbalanced datasets
+- Tree-based ensemble methods (Random Forest, XGBoost)
+- Feature importance analysis and interpretation
+- Hyperparameter tuning with GridSearchCV
+- Model comparison and performance evaluation
+- Handling mixed data types (continuous + categorical)
+- Confusion matrix analysis for multi-class problems
+- Real-world dataset processing from UCI repository
+
+---
+
 ### 🛠️ Technologies Used
 - **Python 3.x**
 - **pandas** - Data manipulation and analysis
